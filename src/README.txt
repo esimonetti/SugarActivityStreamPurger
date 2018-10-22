@@ -5,7 +5,7 @@ After installing the module, activate the scheduler job "Activity Stream Record 
 
 ## Configuration
 It is possible to configure the amount of records that will be deleted per scheduler run, by leveraging the following Sugar config setting:
-$sugar_config['activitystreamcleaner']['limit_scheduler_run'] = 50000;
+$sugar_config['activitystreamcleaner']['limit_scheduler_run'] = 25000;
 
 It is also possible to configure the number of months to keep the activities records for, by leveraging the following Sugar config setting:
 $sugar_config['activitystreamcleaner']['months_to_keep'] = 6;
@@ -13,4 +13,4 @@ $sugar_config['activitystreamcleaner']['months_to_keep'] = 6;
 ## Command Line
 As the first cleanup might be lenghty, it might be a possibility to complete the initial cleanup via command line, by executing the following command:
 ./bin/sugarcrm activitystream:cleanup
-The command above will delete all records at once, without pagination.
+The command above will delete all records at once, without pagination, therefore it might take some time to run.

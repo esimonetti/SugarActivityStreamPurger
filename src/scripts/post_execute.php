@@ -11,7 +11,7 @@ require_once 'modules/Configurator/Configurator.php';
 $configuratorObj = new Configurator();
 $configuratorObj->loadConfig();
 $configuratorObj->config['activitystreamcleaner']['months_to_keep'] = 6;
-$configuratorObj->config['activitystreamcleaner']['limit_scheduler_run'] = 50000;
+$configuratorObj->config['activitystreamcleaner']['limit_scheduler_run'] = 25000;
 $configuratorObj->saveConfig();
 
 $class = 'class::ActivityStreamPurgerJob';
@@ -33,7 +33,7 @@ $scheduler->name = 'Activity Stream Record Purger Job';
 $scheduler->job = $class;
 $scheduler->date_time_start = '2000-01-01 00:00:01';
 $scheduler->date_time_end = '2100-01-01 00:00:01';
-$scheduler->job_interval = '*/30::*::*::*::*';
+$scheduler->job_interval = '*/15::*::*::*::*';
 $scheduler->status = 'Inactive';
 $scheduler->created_by = $current_user->id;
 $scheduler->modified_user_id = $current_user->id;
