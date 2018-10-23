@@ -4,6 +4,9 @@ Take a full backup of the instance before installing the module. Once the module
 After installing the module, activate the scheduler job "Activity Stream Record Purger Job" under Administrator -> Schedulers and make sure the Schedulers are running correctly for the instance
 
 ## Configuration
+It is possible to configure if the system should keep the activities relevant to linking/unlinking of records forever or not, by leveraging the following Sugar config setting:
+$sugar_config['activitystreamcleaner']['keep_all_relationships_activities'] = true;
+
 It is possible to configure the amount of records that will be deleted per scheduler run, by leveraging the following Sugar config setting:
 $sugar_config['activitystreamcleaner']['limit_scheduler_run'] = 25000;
 

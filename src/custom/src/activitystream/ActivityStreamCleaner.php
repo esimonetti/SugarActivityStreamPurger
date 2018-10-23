@@ -4,8 +4,10 @@
 // enricosimonetti.com
 // 2018-10-19 on 8.0.0 with MySQL
 
+
+// $sugar_config['activitystreamcleaner']['keep_all_relationships_activities'] = true;
 // $sugar_config['activitystreamcleaner']['months_to_keep'] = 6;
-// $sugar_config['activitystreamcleaner']['limit_scheduler_run'] = 50000;
+// $sugar_config['activitystreamcleaner']['limit_scheduler_run'] = 25000;
 
 namespace Sugarcrm\Sugarcrm\custom\activitystream;
 use Doctrine\DBAL\Connection;
@@ -18,9 +20,19 @@ class ActivityStreamCleaner
         'activities_users',
     ];
 
-    protected $default_limit = 50000;
+    protected $default_limit = 25000;
     protected $max_in_condition_limit = 500;
     protected $default_months_to_keep = 6;
+    protected $default_keep_all_relationships_activities = true;
+
+    protected $activity_type_to_keep = [
+        'post'
+    ];
+
+    protected $activity_type_relationships = [
+        'link',
+        'unlink'
+    ];
     
     protected function getFilterDate() {
         // retrieve months to keep from config, or set default
@@ -109,6 +121,17 @@ class ActivityStreamCleaner
         }
     }
 
+    private function getActivityTypesToKeep() {
+
+        $keep_relationships_activities = \SugarConfig::getInstance()->get('activitystreamcleaner.keep_all_relationships_activities', $this->default_keep_all_relationships_activities);
+
+        if ($keep_relationships_activities) {
+            return array_merge($this->activity_type_to_keep, $this->activity_type_relationships);
+        } else {
+            return $this->activity_type_to_keep;
+        }
+    }
+
     public function purgeOldActivitiesRecords($limited = true) {
 
         $limit = 0;
@@ -148,7 +171,14 @@ class ActivityStreamCleaner
             $qb->delete('activities');
         }
 
-        $qb->where('activity_type != ' . $qb->createPositionalParameter('post'));
+        // find records without specifics activity_type
+        $qb->where(
+            $qb->expr()->notIn(
+                'activity_type',
+                $qb->createPositionalParameter((array) $this->getActivityTypesToKeep(), Connection::PARAM_STR_ARRAY)
+            )
+        );
+
         $qb->andWhere('date_entered < ' . $qb->createPositionalParameter($date_entered_keep));
         $qb->andWhere($qb->expr()->notIn('id', $qbSub->getSQL()));
 

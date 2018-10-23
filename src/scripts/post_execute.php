@@ -10,6 +10,7 @@ require_once 'modules/Configurator/Configurator.php';
 
 $configuratorObj = new Configurator();
 $configuratorObj->loadConfig();
+$configuratorObj->config['activitystreamcleaner']['keep_all_relationships_activities'] = true;
 $configuratorObj->config['activitystreamcleaner']['months_to_keep'] = 6;
 $configuratorObj->config['activitystreamcleaner']['limit_scheduler_run'] = 25000;
 $configuratorObj->saveConfig();
