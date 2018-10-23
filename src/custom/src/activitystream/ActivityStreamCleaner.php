@@ -123,7 +123,7 @@ class ActivityStreamCleaner
 
     private function getActivityTypesToKeep() {
 
-        $keep_relationships_activities = \SugarConfig::getInstance()->get('activitystreamcleaner.keep_all_relationships_activities', $this->default_keep_all_relationships_activities);
+        $keep_relationships_activities = (bool)\SugarConfig::getInstance()->get('activitystreamcleaner.keep_all_relationships_activities', $this->default_keep_all_relationships_activities);
 
         if ($keep_relationships_activities) {
             return array_merge($this->activity_type_to_keep, $this->activity_type_relationships);
