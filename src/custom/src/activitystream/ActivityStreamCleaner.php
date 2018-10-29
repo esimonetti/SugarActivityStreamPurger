@@ -34,7 +34,8 @@ class ActivityStreamCleaner
         'unlink'
     ];
     
-    protected function getFilterDate() {
+    protected function getFilterDate()
+    {
         // retrieve months to keep from config, or set default
         $months_to_keep = (int)\SugarConfig::getInstance()->get('activitystreamcleaner.months_to_keep', $this->default_months_to_keep);
 
@@ -48,12 +49,13 @@ class ActivityStreamCleaner
         return gmdate('Y-m-d H:i:s', mktime(date('H'), date('i'), date('s'), date('m') - $months_to_keep, date('d'), date('Y')));
     }
 
-    protected function db() {
+    protected function db()
+    {
         return DBManagerFactory::getInstance();
     }
 
-    public function purgeSoftDeletedRecords() {
-
+    public function purgeSoftDeletedRecords()
+    {
         // delete all soft deletes
 
         $qb = $this->db()->getConnection()->createQueryBuilder();
@@ -75,7 +77,8 @@ class ActivityStreamCleaner
         $qb->execute();
     }
 
-    public function countRecordsDifference($initial_count) {
+    public function countRecordsDifference($initial_count)
+    {
         $final_count = [];
         if (!empty($initial_count)) {
             $current_count = $this->countRecords();
@@ -88,8 +91,8 @@ class ActivityStreamCleaner
         return $final_count;
     }
 
-    public function countRecords() {
-
+    public function countRecords()
+    {
         // find all counts
 
         $results = [];
@@ -106,7 +109,8 @@ class ActivityStreamCleaner
         return $results;
     }
 
-    private function purgeActivitiesTableInIds($ids) {
+    private function purgeActivitiesTableInIds($ids)
+    {
         if (!empty($ids)) {
             $qb = $this->db()->getConnection()->createQueryBuilder();
             $qb->delete('activities');
@@ -121,8 +125,8 @@ class ActivityStreamCleaner
         }
     }
 
-    private function getActivityTypesToKeep() {
-
+    private function getActivityTypesToKeep()
+    {
         $keep_relationships_activities = (bool)\SugarConfig::getInstance()->get('activitystreamcleaner.keep_all_relationships_activities', $this->default_keep_all_relationships_activities);
 
         if ($keep_relationships_activities) {
@@ -132,8 +136,8 @@ class ActivityStreamCleaner
         }
     }
 
-    public function purgeOldActivitiesRecords($limited = true) {
-
+    public function purgeOldActivitiesRecords($limited = true)
+    {
         $limit = 0;
         $in_condition_limit = $this->max_in_condition_limit;
 
