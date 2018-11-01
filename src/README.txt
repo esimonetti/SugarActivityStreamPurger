@@ -6,14 +6,16 @@ After installing the module, activate the scheduler job "Activity Stream Record 
 ## Configuration
 It is possible to configure if the system should keep the activities relevant to linking/unlinking of records forever or not, by leveraging the following Sugar config setting:
 $sugar_config['activitystreamcleaner']['keep_all_relationships_activities'] = true;
+The default value is true.
 
-It is possible to configure the amount of records that will be deleted per scheduler run, by leveraging the following Sugar config setting:
+It is possible to configure the amount of records that will be deleted per Scheduler run, by leveraging the following Sugar config setting:
 $sugar_config['activitystreamcleaner']['limit_scheduler_run'] = 25000;
+The default value is 25000 records.
 
-It is also possible to configure the number of months to keep the activities records for, by leveraging the following Sugar config setting:
+It is possible to configure the number of months to keep the activities records for, by leveraging the following Sugar config setting:
 $sugar_config['activitystreamcleaner']['months_to_keep'] = 6;
+The default value is to keep 6 months.
 
-## Command Line
-As the first cleanup might be lenghty, it might be a possibility to complete the initial cleanup via command line, by executing the following command:
-./bin/sugarcrm activitystream:cleanup
-The command above will delete all records at once, without pagination, therefore it might take some time to run.
+It is finally possible to configure if the system should execute the SQL count of records run-time, by leveraging the following Sugar config setting:
+$sugar_config['activitystreamcleaner']['count_enabled'] = false;
+The default value is false, as it might take a long time to execute.

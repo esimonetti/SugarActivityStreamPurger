@@ -24,6 +24,7 @@ class ActivityStreamCleaner
     protected $max_in_condition_limit = 500;
     protected $default_months_to_keep = 6;
     protected $default_keep_all_relationships_activities = true;
+    protected $default_count_enabled = false;
 
     protected $activity_type_to_keep = [
         'post'
@@ -33,6 +34,16 @@ class ActivityStreamCleaner
         'link',
         'unlink'
     ];
+
+    public function isCountEnabled($force = false)
+    {
+        // allow forcing count for CLI
+        if ($force) {
+            return true;
+        }
+
+        return (bool)\SugarConfig::getInstance()->get('activitystreamcleaner.count_enabled', $this->default_count_enabled);
+    }
     
     protected function getFilterDate()
     {
@@ -77,32 +88,40 @@ class ActivityStreamCleaner
         $qb->execute();
     }
 
-    public function countRecordsDifference($initial_count)
+    public function countRecordsDifference($initial_count, $force = false)
     {
         $final_count = [];
-        if (!empty($initial_count)) {
-            $current_count = $this->countRecords();
-        
-            foreach ($initial_count as $table => $value) {
-                $final_count[$table] = $value - $current_count[$table];
+        if ($this->isCountEnabled($force)) {
+            if (!empty($initial_count)) {
+                $current_count = $this->countRecords();
+            
+                foreach ($initial_count as $table => $value) {
+                    if (empty($current_count[$table])) {
+                        $final_count[$table] = 0;
+                    } else {
+                        $final_count[$table] = $value - $current_count[$table];
+                    }
+                }
             }
         }
 
         return $final_count;
     }
 
-    public function countRecords()
+    public function countRecords($force = false)
     {
         // find all counts
-
         $results = [];
-        foreach ($this->tables as $table) {
-            $qb = $this->db()->getConnection()->createQueryBuilder();
-            $qb->select('COUNT(id) as count');
-            $qb->from($table);
-            $res = $qb->execute();
-            if ($row = $res->fetch()) {
-                $results[$table] = $row['count'];
+        if ($this->isCountEnabled($force)) {
+            foreach ($this->tables as $table) {
+                $qb = $this->db()->getConnection()->createQueryBuilder();
+                $qb->select('COUNT(id) as count');
+                $qb->from($table);
+                $res = $qb->execute();
+                if ($row = $res->fetch()) {
+                    $results[$table] = $row['count'];
+                    $GLOBALS['log']->info(__METHOD__ . ' Executed record count for table '. $table . ' with records '. $row['count']);
+                }
             }
         }
 

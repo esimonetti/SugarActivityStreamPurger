@@ -27,10 +27,18 @@ class ActivityStreamPurgerJob implements \RunnableSchedulerJob
         $acs->purgeOldActivitiesRecords();
         $difference = $acs->countRecordsDifference($initial_count);
 
-        $messages = '';
-        foreach ($difference as $table => $count) {
-            $messages .= 'Purged ' . $count . ' records from table ' . $table  . ' (Activities Stream) in ' . round(microtime(true) - $start_time, 2) . ' seconds.' . PHP_EOL;
+        $messages = 'Activity Stream Purge Job executed successfully in ' . round(microtime(true) - $start_time, 2) . ' seconds' . PHP_EOL;
+        if ($acs->isCountEnabled() && !empty($difference)) {
+            foreach ($difference as $table => $count) {
+                if (!empty($initial_count[$table])) {
+                    $messages .= 'The initial record count for database table ' . $table . ' was ' . $initial_count[$table] . PHP_EOL;
+                }
+                if (!empty($count)) {
+                    $messages .= 'Purged ' . $count . ' records from database table ' . $table . PHP_EOL;
+                }
+            }
         }
+
         $this->job->succeedJob($messages);
     }
 }
